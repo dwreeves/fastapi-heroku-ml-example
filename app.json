@@ -1,0 +1,33 @@
+{
+  "name": "My prediction service",
+  "description": "This is my prediction service!",
+  "buildpacks": [{"url":  "heroku/python"}],
+  "scripts": {
+    "postdeploy": "alembic upgrade head"
+  },
+  "environments": {
+    "review": {
+      "addons": [
+        "scheduler:standard",
+        "heroku-postgresql:hobby-dev",
+        {
+          "plan": "heroku-redis:hobby-dev",
+          "as": "REDIS_CACHE",
+          "options": {
+            "maxmemory_policy": "volatile-lru"
+          }
+        }
+      ]
+    },
+    "test": {
+      "scripts": {
+        "test": "python -m pytest"
+      }
+    }
+  },
+  "env": {
+    "SECRET_KEY": {
+      "generator": "secret"
+    }
+  }
+}

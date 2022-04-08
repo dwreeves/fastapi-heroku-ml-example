@@ -1,0 +1,61 @@
+# This docker-compose file is aimed at use for local development.
+
+x-global: &global-config
+  restart: unless-stopped
+  stop_grace_period: 5s
+  tty: true
+  env_file:
+    - .env
+
+version: "3.3"
+services:
+
+  web:
+    <<: *global-config
+    build: .
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/healthz"]
+      interval: 60s
+      timeout: 5s
+      retries: 2
+    depends_on:
+      - postgres
+      - redis
+      - celeryworker
+    env_file:
+      - .env
+    ports:
+      - 80:80
+
+  postgres:
+    <<: *global-config
+    image: postgres:alpine
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  redis:
+    <<: *global-config
+    image: redis:alpine
+
+  celeryworker:
+    <<: *global-config
+    build: .
+    entrypoint: ["celery", "-A", "app.celery:celery_app", "worker"]
+    depends_on:
+      - redis
+    ports:
+      - 5555:5555
+
+  pgadmin:
+    <<: *global-config
+    image: dpage/pgadmin4
+    depends_on:
+      - postgres
+    ports:
+      - 5050:80
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+
+volumes:
+  postgres: {}
+  pgadmin: {}

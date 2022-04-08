@@ -1,0 +1,39 @@
+# Python 3.10
+
+# ==========================================================
+# Core
+# ==========================================================
+
+alembic
+celery
+click
+fastapi
+gunicorn
+asyncpg
+python-dotenv
+redis
+rich-click
+sqladmin
+sqlalchemy
+sqlmodel
+uvicorn
+pandas
+
+# ==========================================================
+# Testing
+# ==========================================================
+
+pytest
+pytest-celery
+pytest-cov
+pytest-postgresql<4
+schemathesis
+
+# ==========================================================
+# Misc.
+# ==========================================================
+
+flake8
+isort
+pip-tools
+pre-commit
