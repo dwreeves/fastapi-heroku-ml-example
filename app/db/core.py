@@ -1,9 +1,11 @@
 import typing as t
+from contextlib import contextmanager
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.asyncio import AsyncSession as _AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
+
 
 from app.config import settings
 
@@ -29,6 +31,8 @@ def AsyncSession() -> _AsyncSession:  # noqa
     return __sm()
 
 
+# Use with fastapi.Depends
 async def get_db() -> t.Generator[_AsyncSession, None, None]:
     with AsyncSession() as session:
+        session: _AsyncSession
         yield session

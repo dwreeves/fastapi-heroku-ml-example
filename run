@@ -89,6 +89,32 @@ function redis-cli {
   _dc redis redis-cli "${@}"
 }
 
+function heroku:create {
+  heroku apps:create -a "${@}-development"
+  heroku apps:create -a "${@}-staging"
+  heroku apps:create -a "${@}-production"
+  heroku git:remote -a "${@}-development"
+  heroku pipelines:create "${@}" -a "${@}-development" --stage development
+  heroku pipelines:add "${@}" -a "${@}-staging" --stage staging
+  heroku pipelines:add "${@}" -a "${@}-production" --stage production
+  heroku pipelines:info "${@}"
+  echo
+  echo "You are being sent to the Heroku CI dashboard."
+  echo "Hook up a Github repo to the pipeline!"
+  echo
+  sleep 2
+  heroku ci:open
+}
+
+function heroku:destroy {
+  heroku pipelines:destroy "${@}" --confirm "${@}"
+  heroku apps:destroy "${@}-development" --confirm "${@}-development"
+  heroku apps:destroy "${@}-staging" --confirm "${@}-staging"
+  heroku apps:destroy -a "${@}-production" --confirm "${@}-production"
+  heroku git:remote -a "${@}-development"
+  git remote remove heroku
+}
+
 function pip3:install {
   # Install pip3 dependencies and write lock file
   _build_run_down web bin/pip3-install

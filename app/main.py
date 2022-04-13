@@ -12,13 +12,14 @@ app.mount(app=app_v1, path="/api/v1")
 
 
 @app.get("/", include_in_schema=False)
-def index():
+async def index():
     return RedirectResponse("/api/v1/docs")
 
 
 @app.get("/healthz")
 @app.get("/livez")
 @app.get("/readyz")
-def health():
+async def health():
     """Health check"""
+
     return Response(status_code=200)

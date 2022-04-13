@@ -28,7 +28,8 @@ class Settings(BaseSettings):
 
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> str:
-        return str(self.DATABASE_URL).replace("postgresql", "postgresql+asyncpg", 1)
+        return str(self.DATABASE_URL) \
+            .replace("postgresql://", "postgresql+asyncpg://", 1)
 
 
 settings = Settings()
