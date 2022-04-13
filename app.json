@@ -1,7 +1,11 @@
 {
   "name": "My prediction service",
   "description": "This is my prediction service!",
-  "buildpacks": [{"url":  "heroku/python"}],
+  "buildpacks": [
+    {
+      "url":  "heroku/python"
+    }
+  ],
   "scripts": {
     "postdeploy": "alembic upgrade head"
   },

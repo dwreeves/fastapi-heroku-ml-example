@@ -1,10 +1,8 @@
 import typing as t
-from enum import Enum
 
 from pydantic.main import BaseModel
 
 from app.db.models import Airport
-
 
 # ==========================================================
 # Original request

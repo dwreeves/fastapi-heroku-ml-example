@@ -1,25 +1,22 @@
 import asyncio
-import typing as t
 
-from fastapi import FastAPI
 from fastapi import Depends
+from fastapi import FastAPI
 from fastapi import HTTPException
-
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.v1.schemas import PreprocessedRequest
-from app.api.v1.schemas import PreprocessedInstance
-from app.api.v1.schemas import ProcessedInstance
-from app.api.v1.schemas import ProcessedRequest
-from app.api.v1.schemas import PredictionResponse
 from app.api.v1.core import DEFAULT_MODEL
 from app.api.v1.core import predictive_models
 from app.api.v1.core import PredictiveModelBase
 from app.api.v1.core import PredictiveModelName
+from app.api.v1.schemas import PredictionResponse
+from app.api.v1.schemas import PreprocessedInstance
+from app.api.v1.schemas import PreprocessedRequest
+from app.api.v1.schemas import ProcessedInstance
+from app.api.v1.schemas import ProcessedRequest
 from app.db.core import get_db
 from app.db.models import Airport
-
 
 app = FastAPI(
     root_path="/api/v1"

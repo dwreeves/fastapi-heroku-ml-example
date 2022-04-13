@@ -1,4 +1,4 @@
-name: "Tests"
+name: Tests
 
 on:
   pull_request:
@@ -6,24 +6,33 @@ on:
       - "*"
   push:
     branches:
-      - "main"
-      - "master"
+      - main
+      - master
 
 jobs:
   test:
-    runs-on: "ubuntu-20.04"
+    runs-on: ubuntu-20.04
 
     steps:
-      - uses: "actions/checkout@v2"
+      - uses: actions/checkout@v2
 
-      - name: "Install CI dependencies"
+      - name: Install CI dependencies
         run: |
-          ./run ci:install-deps
-      - name: "Test"
+          sudo apt-get update
+          sudo apt-get install -y curl shellcheck
+          sudo curl \
+            -L https://raw.githubusercontent.com/nickjj/wait-until/v0.2.0/wait-until \
+            -o /usr/local/bin/wait-until && sudo chmod +x /usr/local/bin/wait-until
+      - name: Setup Docker
         run: |
-          # Remove volumes in CI to avoid permission errors due to UID / GID.
-          sed -i "s|.:/app|/tmp:/tmp|g" .env*
-          sed -i "s|.:/app|/tmp:/tmp|g" docker-compose.override.yml.example
-          ./run ci:test
+          mv .env.example .env
+          docker compose build
+          docker compose up -d
+          wait-until "docker compose exec -T postgres psql -U postgres postgres -c 'SELECT 1'"
         env:
           DOCKER_BUILDKIT: "1"
+      - name: Test
+        run: |
+          ./run lint
+          ./run test
+          shellcheck ./run
