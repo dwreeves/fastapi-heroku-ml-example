@@ -1,9 +1,10 @@
-import typing as t
 import os.path as op
+import typing as t
+
 import pandas as pd
 
-from app.db.models import Airport
 from app.db.core import AsyncSession
+from app.db.models import Airport
 
 AIRPORTS_CSV = op.join(op.dirname(__file__), "airports.csv")
 

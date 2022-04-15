@@ -2,9 +2,9 @@ import math
 import typing as t
 from enum import Enum
 
-from app.api.v1.schemas import ProcessedInstance
-from app.api.v1.schemas import PredictionInstance
 from app.api.v1.schemas import Distance
+from app.api.v1.schemas import PredictionInstance
+from app.api.v1.schemas import ProcessedInstance
 
 
 class PredictiveModelName(str, Enum):

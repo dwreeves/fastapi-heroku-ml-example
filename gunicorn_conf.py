@@ -1,3 +1,4 @@
+# flake8: noqa: F841
 import multiprocessing
 import os
 

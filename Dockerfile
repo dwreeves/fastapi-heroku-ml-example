@@ -1,7 +1,5 @@
 FROM python:3.10
 
-MAINTAINER Daniel Reeves "xdanielreeves@gmail.com"
-
 WORKDIR /
 COPY requirements.txt /home/requirements.txt
 RUN pip install --no-cache-dir -r /home/requirements.txt

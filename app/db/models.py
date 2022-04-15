@@ -1,7 +1,8 @@
-import sqlalchemy as sa
-from sqlmodel import SQLModel
+import sqlalchemy as sa  # noqa: F401
 from sqlmodel import Field
-from app.db.core import Base
+from sqlmodel import SQLModel
+
+from app.db.core import Base  # noqa: F401
 
 
 class Airport(SQLModel, table=True):

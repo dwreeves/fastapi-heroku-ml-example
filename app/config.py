@@ -1,15 +1,9 @@
-import typing as t
 from enum import Enum
 
+from dotenv import load_dotenv
 from pydantic import BaseSettings
 from pydantic import PostgresDsn
 from pydantic import RedisDsn
-from pydantic import validator
-from pydantic import Field
-from pydantic import PrivateAttr
-from pydantic import root_validator
-from dotenv import load_dotenv
-
 
 load_dotenv()
 
@@ -28,7 +22,8 @@ class Settings(BaseSettings):
 
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> str:
-        return str(self.DATABASE_URL).replace("postgresql", "postgresql+asyncpg", 1)
+        return str(self.DATABASE_URL) \
+            .replace("postgresql://", "postgresql+asyncpg://", 1)
 
 
 settings = Settings()

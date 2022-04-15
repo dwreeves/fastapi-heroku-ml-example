@@ -1,14 +1,16 @@
 """empty message
 
 Revision ID: d7f3f3b73d86
-Revises: 
+Revises:
 Create Date: 2022-04-07 21:50:11.693957
 
 """
-import sqlmodel.sql.sqltypes
-from alembic import op
-import sqlalchemy as sa
+# flake8: noqa: E122
 
+import sqlalchemy as sa
+import sqlmodel.sql.sqltypes
+
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = 'd7f3f3b73d86'

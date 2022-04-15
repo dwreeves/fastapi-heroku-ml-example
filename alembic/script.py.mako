@@ -5,6 +5,8 @@ Revises: ${down_revision | comma,n}
 Create Date: ${create_date}
 
 """
+# flake8: noqa: E122
+
 from alembic import op
 import sqlalchemy as sa
 import sqlmodel.sql.sqltypes

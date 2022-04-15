@@ -15,12 +15,12 @@ fi
 # -----------------------------------------------------------------------------
 
 function _dc {
-  docker compose "${DC}" ${TTY} "${@}"
+  docker compose "${DC}" "${TTY}" "${@}"
 }
 
 function _build_run_down {
   docker compose build
-  docker compose run ${TTY} "${@}"
+  docker compose run "${TTY}" "${@}"
   docker compose down
 }
 
@@ -29,6 +29,7 @@ function _build_run_down {
 function setup {
   # first time (local) setup of the repo.
   python3.10 -m venv venv
+  # shellcheck source=/dev/null
   source venv/bin/activate
   python -m pip install -r requirements.txt
   python venv/bin/pre-commit install
@@ -41,9 +42,12 @@ function cmd {
   _dc web "${@}"
 }
 
-function pip {
-  # hello world
-  cmd pip-compile --no-emit-options requirements.in
+function setup:osx {
+  # Download devops dependencies (notwithstanding Docker + Python)
+  brew update
+  brew tap heroku/brew && brew install heroku
+  brew install shellcheck
+  brew install hadolint
 }
 
 function lint:dockerfile {
@@ -57,14 +61,9 @@ function lint {
   cmd flake8 "${@}"
 }
 
-function format {
-  # Format Python code
-  cmd black . "${@}"
-}
-
 function test {
   # Run test suite
-  cmd pytest test/ "${@}"
+  cmd python -m pytest "${@}"
 }
 
 function test:coverage {
@@ -79,9 +78,7 @@ function shell {
 
 function psql {
   # Connect to PostgreSQL
-  # shellcheck disable=SC1091
-  . .env
- _dc postgres psql -U "${POSTGRES_USER}" "${@}"
+  _dc postgres psql -U "${POSTGRES_USER}" "${@}"
 }
 
 function redis-cli {
@@ -89,44 +86,30 @@ function redis-cli {
   _dc redis redis-cli "${@}"
 }
 
-function pip3:install {
-  # Install pip3 dependencies and write lock file
-  _build_run_down web bin/pip3-install
+function heroku:create {
+  heroku apps:create -a "${1}-development"
+  heroku apps:create -a "${1}-staging"
+  heroku apps:create -a "${1}-production"
+  heroku git:remote -a "${1}-development"
+  heroku pipelines:create "${1}" -a "${1}-development" --stage development
+  heroku pipelines:add "${1}" -a "${1}-staging" --stage staging
+  heroku pipelines:add "${1}" -a "${1}-production" --stage production
+  heroku pipelines:info "${1}"
+  echo
+  echo "You are being sent to the Heroku CI dashboard."
+  echo "Hook up a Github repo to the pipeline!"
+  echo
+  sleep 2
+  heroku ci:open
 }
 
-function pip3:outdated {
-  # List any installed packages that are outdated
-  cmd pip3 list --outdated
-}
-
-function yarn:install {
-  # Install yarn dependencies and write lock file
-  _build_run_down js yarn install
-}
-
-function yarn:outdated {
-  # List any installed packages that are outdated
-  _dc js yarn outdated
-}
-
-function yarn:build:js {
-  # Build JS assets, this is meant to be run from within the assets container
-  mkdir -p ../public/js
-  node esbuild.config.js
-}
-
-function yarn:build:css {
-  # Build CSS assets, this is meant to be run from within the assets container
-  local args=()
-
-  if [ "${NODE_ENV}" == "production" ]; then
-    args=(--minify)
-  else
-    args=(--watch)
-  fi
-
-  mkdir -p ../public/css
-  tailwindcss --postcss -i css/app.css -o ../public/css/app.css "${args[@]}"
+function heroku:destroy {
+  heroku pipelines:destroy "${1}" --confirm "${1}"
+  heroku apps:destroy "${1}-development" --confirm "${1}-development"
+  heroku apps:destroy "${1}-staging" --confirm "${1}-staging"
+  heroku apps:destroy -a "${1}-production" --confirm "${1}-production"
+  heroku git:remote -a "${1}-development"
+  git remote remove heroku
 }
 
 function clean {
@@ -135,40 +118,6 @@ function clean {
     .pytest_cache/ .coverage celerybeat-schedule
 
   touch public/.keep
-}
-
-function ci:install-deps {
-  # Install Continuous Integration (CI) dependencies
-  sudo apt-get install -y curl shellcheck
-  sudo curl \
-    -L https://raw.githubusercontent.com/nickjj/wait-until/v0.2.0/wait-until \
-    -o /usr/local/bin/wait-until && sudo chmod +x /usr/local/bin/wait-until
-}
-
-function ci:test {
-  # Execute Continuous Integration (CI) pipeline
-  #
-  # It's expected that your CI environment has these tools available:
-  #   - https://github.com/koalaman/shellcheck
-  #   - https://github.com/nickjj/wait-until
-  shellcheck run bin/*
-  lint:dockerfile "${@}"
-
-  cp --no-clobber .env.example .env
-  cp --no-clobber docker-compose.override.yml.example docker-compose.override.yml
-
-  docker-compose build
-  docker-compose up -d
-
-  # shellcheck disable=SC1091
-  . .env
-  wait-until "docker-compose exec -T \
-    -e PGPASSWORD=${POSTGRES_PASSWORD} postgres \
-    psql -U ${POSTGRES_USER} ${POSTGRES_USER} -c 'SELECT 1'"
-
-  lint "${@}"
-  format --check
-  test "${@}"
 }
 
 function help {
