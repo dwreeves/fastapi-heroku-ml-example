@@ -10,26 +10,22 @@ from app.config import settings
 Base = declarative_base()
 
 
-engine = create_async_engine(
+async_engine = create_async_engine(
     settings.SQLALCHEMY_DATABASE_URI,
     pool_pre_ping=True,
+    pool_size=20,
+    max_overflow=0
 )
 
-
-__sm = sessionmaker(
-    bind=engine,
+AsyncSession = sessionmaker(
+    bind=async_engine,
     class_=_AsyncSession,
-    autocommit=False,
-    autoflush=False
+    expire_on_commit=False
 )
-
-
-def AsyncSession() -> _AsyncSession:  # noqa
-    return __sm()
 
 
 # Use with fastapi.Depends
 async def get_db() -> t.Generator[_AsyncSession, None, None]:
-    with AsyncSession() as session:
-        session: _AsyncSession
-        yield session
+    async with AsyncSession() as db:
+        db: _AsyncSession
+        yield db

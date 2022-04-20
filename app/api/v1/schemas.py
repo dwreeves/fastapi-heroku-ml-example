@@ -1,6 +1,7 @@
 import typing as t
 
-from pydantic.main import BaseModel
+from pydantic import BaseModel
+from pydantic import validator
 
 from app.db.models import Airport
 
@@ -40,6 +41,10 @@ class ProcessedRequest(BaseModel):
 class Distance(BaseModel):
     value: float
     unit: t.Literal["km"] = "km"
+
+    @validator("value")
+    def round_value(cls, v: float) -> float:
+        return round(v, 3)
 
 
 class PredictionInstance(BaseModel):

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2086
 
 DC="${DC:-exec}"
 
@@ -15,12 +16,12 @@ fi
 # -----------------------------------------------------------------------------
 
 function _dc {
-  docker compose "${DC}" "${TTY}" "${@}"
+  docker compose "${DC}" ${TTY} "${@}"
 }
 
 function _build_run_down {
   docker compose build
-  docker compose run "${TTY}" "${@}"
+  docker compose run ${TTY} "${@}"
   docker compose down
 }
 
