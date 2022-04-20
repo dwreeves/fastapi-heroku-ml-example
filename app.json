@@ -9,19 +9,23 @@
   "scripts": {
     "postdeploy": "alembic upgrade head"
   },
+  "addons": [
+    "heroku-postgresql:hobby-dev",
+    {
+      "plan": "heroku-redis:hobby-dev",
+      "as": "REDIS_CACHE",
+      "options": {
+        "maxmemory_policy": "volatile-lru"
+      }
+    }
+  ],
   "environments": {
     "review": {
-      "addons": [
-        "scheduler:standard",
-        "heroku-postgresql:hobby-dev",
-        {
-          "plan": "heroku-redis:hobby-dev",
-          "as": "REDIS_CACHE",
-          "options": {
-            "maxmemory_policy": "volatile-lru"
-          }
+      "env": {
+        "ENV": {
+          "value": "STAGING"
         }
-      ]
+      }
     },
     "test": {
       "scripts": {
@@ -30,8 +34,6 @@
     }
   },
   "env": {
-    "SECRET_KEY": {
-      "generator": "secret"
-    }
+    "value": "PRODUCTION"
   }
 }

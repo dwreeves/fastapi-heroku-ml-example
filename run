@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2086
 
 DC="${DC:-exec}"
 
@@ -15,12 +16,12 @@ fi
 # -----------------------------------------------------------------------------
 
 function _dc {
-  docker compose "${DC}" "${TTY}" "${@}"
+  docker compose "${DC}" ${TTY} "${@}"
 }
 
 function _build_run_down {
   docker compose build
-  docker compose run "${TTY}" "${@}"
+  docker compose run ${TTY} "${@}"
   docker compose down
 }
 
@@ -87,10 +88,23 @@ function redis-cli {
 }
 
 function heroku:create {
+  # Create base versions of each app.
   heroku apps:create -a "${1}-development"
   heroku apps:create -a "${1}-staging"
   heroku apps:create -a "${1}-production"
+
+  heroku addons:create heroku-postgresql:hobby-dev -a "${1}-development"
+  heroku addons:create heroku-postgresql:hobby-dev -a "${1}-staging"
+  heroku addons:create heroku-postgresql:hobby-dev -a "${1}-production"
+
+  heroku config:set -a "${1}-development" SECRET_KEY=$(uuidgen)
+  heroku config:set -a "${1}-staging" SECRET_KEY=$(uuidgen)
+  heroku config:set -a "${1}-production" SECRET_KEY=$(uuidgen)
+
   heroku git:remote -a "${1}-development"
+  git remote add heroku-staging "https://git.heroku.com/${1}-staging"
+  git remote add heroku-production "https://git.heroku.com/${1}-production"
+
   heroku pipelines:create "${1}" -a "${1}-development" --stage development
   heroku pipelines:add "${1}" -a "${1}-staging" --stage staging
   heroku pipelines:add "${1}" -a "${1}-production" --stage production
@@ -104,12 +118,14 @@ function heroku:create {
 }
 
 function heroku:destroy {
-  heroku pipelines:destroy "${1}" --confirm "${1}"
+  heroku pipelines:destroy "${1}"
+
   heroku apps:destroy "${1}-development" --confirm "${1}-development"
   heroku apps:destroy "${1}-staging" --confirm "${1}-staging"
-  heroku apps:destroy -a "${1}-production" --confirm "${1}-production"
-  heroku git:remote -a "${1}-development"
-  git remote remove heroku
+  heroku apps:destroy "${1}-production" --confirm "${1}-production"
+
+  git remote remove heroku-staging
+  git remote remove heroku-production
 }
 
 function clean {

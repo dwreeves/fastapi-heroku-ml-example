@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from pydantic import BaseSettings
 from pydantic import PostgresDsn
 from pydantic import RedisDsn
+from pydantic import validator
 
 load_dotenv()
 
@@ -24,6 +25,11 @@ class Settings(BaseSettings):
     def SQLALCHEMY_DATABASE_URI(self) -> str:
         return str(self.DATABASE_URL) \
             .replace("postgresql://", "postgresql+asyncpg://", 1)
+
+    @validator("DATABASE_URL", pre=True)
+    def validate_database_url(cls, v: str) -> str:
+        # Heroku database URL schemes are postgres://, not postgresql://.
+        return v.replace("postgres://", "postgresql://")
 
 
 settings = Settings()

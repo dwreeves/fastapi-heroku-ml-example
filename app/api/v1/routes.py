@@ -3,6 +3,7 @@ import asyncio
 from fastapi import Depends
 from fastapi import FastAPI
 from fastapi import HTTPException
+from fastapi.responses import ORJSONResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,7 +20,8 @@ from app.db.core import get_db
 from app.db.models import Airport
 
 app = FastAPI(
-    root_path="/api/v1"
+    root_path="/api/v1",
+    default_response_class=ORJSONResponse
 )
 
 

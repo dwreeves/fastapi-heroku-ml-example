@@ -7,13 +7,17 @@
 alembic
 celery
 click
-fastapi
+click-didyoumean
 gunicorn
 asyncpg
 python-dotenv
 redis
+orjson
 rich-click
+requests
+fastapi
 sqladmin
+starlette
 sqlalchemy
 sqlmodel
 uvicorn
@@ -23,11 +27,11 @@ pandas
 # Testing
 # ==========================================================
 
+nest-asyncio
 pytest
 pytest-celery
 pytest-cov
 pytest-postgresql<4
-schemathesis
 
 # ==========================================================
 # Misc.
