@@ -19,6 +19,7 @@ from app.api.v1.schemas import ProcessedInstance
 from app.api.v1.schemas import ProcessedRequest
 from app.db.models import Airport
 
+
 router = APIRouter(
     prefix="/api/v1",
     default_response_class=ORJSONResponse

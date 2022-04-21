@@ -16,6 +16,7 @@ from app.api.depends import get_db
 from app.api.v1.routes import router as router_v1
 from app.config import settings
 
+
 app = FastAPI(
     title=settings.APP_NAME,
     docs_url=None,

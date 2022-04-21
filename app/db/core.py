@@ -7,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.config import settings
 
+
 Base = declarative_base()
 
 

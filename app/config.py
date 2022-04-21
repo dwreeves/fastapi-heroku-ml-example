@@ -10,6 +10,7 @@ from pydantic import PostgresDsn
 from pydantic import RedisDsn
 from pydantic import validator
 
+
 APP_ROOT = op.dirname(__file__)
 
 load_dotenv()

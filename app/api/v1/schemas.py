@@ -5,6 +5,7 @@ from pydantic import validator
 
 from app.db.models import Airport
 
+
 # ==========================================================
 # Original request
 # ==========================================================

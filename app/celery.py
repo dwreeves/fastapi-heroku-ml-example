@@ -1,5 +1,6 @@
 import warnings
 
+
 with warnings.catch_warnings():
     warnings.simplefilter("ignore", category=DeprecationWarning)
     from celery import Celery
@@ -7,6 +8,7 @@ with warnings.catch_warnings():
 from redis import Redis
 
 from app.config import settings
+
 
 celery_app = Celery(
     broker=settings.REDIS_URL,

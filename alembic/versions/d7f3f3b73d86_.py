@@ -11,8 +11,8 @@ import sqlalchemy as sa
 import sqlmodel.sql.sqltypes
 
 from alembic import op
-
 from app.db.process import seed_db
+
 
 # revision identifiers, used by Alembic.
 revision = 'd7f3f3b73d86'

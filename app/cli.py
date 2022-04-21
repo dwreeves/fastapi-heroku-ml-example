@@ -39,4 +39,5 @@ seed_db_command: click.Command
 # load the Celery app to assist the Celery CLI.
 import app.celery  # noqa: F401, E402
 
+
 cli.add_command(celery_cmd)

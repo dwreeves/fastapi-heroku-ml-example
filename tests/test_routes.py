@@ -4,6 +4,7 @@ import typing as t
 import orjson
 import pytest
 
+
 TEST_DIR = op.abspath(op.dirname(__file__))
 REQUESTS_DIR = op.join(TEST_DIR, "resources", "requests")
 RESPONSES_DIR = op.join(TEST_DIR, "resources", "responses")
