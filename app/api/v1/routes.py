@@ -1,12 +1,13 @@
 import asyncio
 
+from fastapi import APIRouter
 from fastapi import Depends
-from fastapi import FastAPI
 from fastapi import HTTPException
 from fastapi.responses import ORJSONResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.depends import get_db
 from app.api.v1.core import DEFAULT_MODEL
 from app.api.v1.core import predictive_models
 from app.api.v1.core import PredictiveModelBase
@@ -16,11 +17,10 @@ from app.api.v1.schemas import PreprocessedInstance
 from app.api.v1.schemas import PreprocessedRequest
 from app.api.v1.schemas import ProcessedInstance
 from app.api.v1.schemas import ProcessedRequest
-from app.db.core import get_db
 from app.db.models import Airport
 
-app = FastAPI(
-    root_path="/api/v1",
+router = APIRouter(
+    prefix="/api/v1",
     default_response_class=ORJSONResponse
 )
 
@@ -77,7 +77,7 @@ def get_predictive_model(
         raise HTTPException(status_code=404, detail="Model not found")
 
 
-@app.post("/predict")
+@router.post("/predict")
 async def predict_view(
         data: ProcessedRequest = Depends(process_request),
         predictive_model: PredictiveModelBase = Depends(get_predictive_model)

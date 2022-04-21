@@ -1,0 +1,11 @@
+{
+  "instances": [
+    {
+      "origin_iata": "KMG",
+      "destination_iata": "SHA"
+    },    {
+      "origin_iata": "SHA",
+      "destination_iata": "SZX"
+    }
+  ]
+}

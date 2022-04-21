@@ -22,10 +22,3 @@ AsyncSession: t.Type[_AsyncSession] = sessionmaker(
     class_=_AsyncSession,
     expire_on_commit=False
 )
-
-
-# Use with fastapi.Depends
-async def get_db() -> t.Generator[_AsyncSession, None, None]:
-    async with AsyncSession() as db:
-        db: _AsyncSession
-        yield db

@@ -5,12 +5,14 @@
 # ==========================================================
 
 alembic
+asgi-correlation-id
 celery
 click
 click-didyoumean
 gunicorn
 asyncpg
 python-dotenv
+httpx
 redis
 orjson
 rich-click
@@ -27,7 +29,6 @@ pandas
 # Testing
 # ==========================================================
 
-nest-asyncio
 pytest
 pytest-celery
 pytest-cov
