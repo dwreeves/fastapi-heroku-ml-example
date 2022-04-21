@@ -88,22 +88,36 @@ function redis-cli {
 }
 
 function heroku:create {
-  # Create base versions of each app.
+  # Create and set up dev/staging/prod apps plus pipeline.
   heroku apps:create -a "${1}-development"
   heroku apps:create -a "${1}-staging"
   heroku apps:create -a "${1}-production"
+
+  heroku config:set -a "${1}-development" "SECRET_KEY=$(uuidgen)" ENV=development
+  heroku config:set -a "${1}-staging" "SECRET_KEY=$(uuidgen)" ENV=staging
+  heroku config:set -a "${1}-production" "SECRET_KEY=$(uuidgen)" ENV=production
 
   heroku addons:create heroku-postgresql:hobby-dev -a "${1}-development"
   heroku addons:create heroku-postgresql:hobby-dev -a "${1}-staging"
   heroku addons:create heroku-postgresql:hobby-dev -a "${1}-production"
 
-  heroku config:set -a "${1}-development" SECRET_KEY=$(uuidgen)
-  heroku config:set -a "${1}-staging" SECRET_KEY=$(uuidgen)
-  heroku config:set -a "${1}-production" SECRET_KEY=$(uuidgen)
+  heroku addons:create logtail:free -a "${1}-development"
+  heroku addons:create logtail:free -a "${1}-staging"
+  heroku addons:create logtail:free -a "${1}-production"
 
+  # Dev environment is the main heroku app because it is more typical to
+  # engage directly with the dev environment than production.
   heroku git:remote -a "${1}-development"
   git remote add heroku-staging "https://git.heroku.com/${1}-staging"
   git remote add heroku-production "https://git.heroku.com/${1}-production"
+
+  git push heroku main
+  git push heroku-staging main
+  git push heroku-production main
+
+  heroku run -a "${1}-development" python -m app seed-db
+  heroku run -a "${1}-staging" python -m app seed-db
+  heroku run -a "${1}-production" python -m app seed-db
 
   heroku pipelines:create "${1}" -a "${1}-development" --stage development
   heroku pipelines:add "${1}" -a "${1}-staging" --stage staging

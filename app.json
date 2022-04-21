@@ -11,6 +11,7 @@
   },
   "addons": [
     "heroku-postgresql:hobby-dev",
+    "logtail:free",
     {
       "plan": "heroku-redis:hobby-dev",
       "as": "REDIS_CACHE",
