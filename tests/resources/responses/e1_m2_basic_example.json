@@ -2,10 +2,10 @@
   "instances": [
     {
       "distance": {
-        "value": 1000,
+        "value": 13401.735,
         "unit": "km"
       },
-      "international": false
+      "international": true
     }
   ]
 }
