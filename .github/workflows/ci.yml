@@ -29,6 +29,8 @@ jobs:
           docker compose build
           docker compose up -d
           wait-until "docker compose exec -T postgres psql -U postgres postgres -c 'SELECT 1'"
+          docker compose exec web alembic upgrade head
+          docker compose exec web python -m app seed-db
         env:
           DOCKER_BUILDKIT: "1"
       - name: Test

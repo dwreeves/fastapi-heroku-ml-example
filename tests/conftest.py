@@ -16,7 +16,7 @@ def client(db) -> TestClient:
 
 
 @pytest.fixture
-async def db(monkeypatch):
+def db(monkeypatch):
     # https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html#using-multiple-asyncio-event-loops
     async_engine = create_async_engine(
         settings.SQLALCHEMY_DATABASE_URI,

@@ -154,8 +154,11 @@ pyparsing==3.0.8
 pytest==7.1.1
     # via
     #   -r requirements.in
+    #   pytest-asyncio
     #   pytest-cov
     #   pytest-postgresql
+pytest-asyncio==0.18.3
+    # via -r requirements.in
 pytest-celery==0.0.0
     # via -r requirements.in
 pytest-cov==3.0.0
