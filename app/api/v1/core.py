@@ -2,6 +2,9 @@ import math
 import typing as t
 from enum import Enum
 
+from numba import float32
+from numba import jit
+
 from app.api.v1.schemas import Distance
 from app.api.v1.schemas import PredictionInstance
 from app.api.v1.schemas import ProcessedInstance
@@ -38,19 +41,14 @@ class PredictiveModelV1(PredictiveModelBase):
 class PredictiveModelV2(PredictiveModelBase):
     name = "v2"
 
-    def predict(self, data: ProcessedInstance) -> PredictionInstance:
-        """V2 is a slightly better model.
-
-        Derived from: https://stackoverflow.com/a/38187562
-        """
-
-        # Calculate distance
-
-        lat1 = data.origin_airport.latitude
-        lon1 = data.origin_airport.longitude
-        lat2 = data.destination_airport.latitude
-        lon2 = data.destination_airport.longitude
-
+    @staticmethod
+    @jit(float32(float32, float32, float32, float32), nopython=True)
+    def _haversine_distance(
+            lat1: float,
+            lat2: float,
+            lon1: float,
+            lon2: float,
+    ) -> float:
         dlat = math.radians(lat2 - lat1)
         dlon = math.radians(lon2 - lon1)
         a = (
@@ -60,6 +58,22 @@ class PredictiveModelV2(PredictiveModelBase):
             (math.sin(dlon / 2) ** 2)
         )
         dist = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a)) * 6371
+        return dist
+
+    def predict(self, data: ProcessedInstance) -> PredictionInstance:
+        """V2 is a slightly better model.
+
+        Derived from: https://stackoverflow.com/a/38187562
+        """
+
+        # Calculate distance
+
+        dist = self._haversine_distance(
+            lat1=data.origin_airport.latitude,
+            lon1=data.origin_airport.longitude,
+            lat2=data.destination_airport.latitude,
+            lon2=data.destination_airport.longitude
+        )
 
         # Calculate if it's international.
 

@@ -1,3 +1,6 @@
+import time
+import typing as t
+
 from asgi_correlation_id import CorrelationIdMiddleware
 from asgi_correlation_id.context import correlation_id
 from fastapi import Depends
@@ -26,6 +29,17 @@ app = FastAPI(
 app.include_router(router_v1)
 
 app.add_middleware(CorrelationIdMiddleware)
+
+
+@app.middleware("http")
+async def time_it(
+        request: Request,
+        call_next: t.Callable[[Request], t.Awaitable[Response]]
+) -> Response:
+    start = time.time()
+    res = await call_next(request)
+    res.headers["X-Process-Time"] = str(time.time() - start)
+    return res
 
 
 @app.exception_handler(Exception)

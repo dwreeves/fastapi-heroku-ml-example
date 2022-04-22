@@ -14,8 +14,8 @@ Base = declarative_base()
 async_engine = create_async_engine(
     settings.SQLALCHEMY_DATABASE_URI,
     pool_pre_ping=True,
-    pool_size=20,
-    max_overflow=0
+    pool_size=5,
+    max_overflow=10
 )
 
 AsyncSession: t.Type[_AsyncSession] = sessionmaker(
