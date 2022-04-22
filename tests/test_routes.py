@@ -44,7 +44,7 @@ def test_endpoint_api_v1_model_v1(client, request_response, db):
     "e1_m2_non_international_china",
     "e1_m2_two_predictions"
 )
-def test_endpoint_api_v1_model_v2(client, request_response, db):
+def test_endpoint_api_v1_model_v2(client, request_response):
     req, expected_res = request_response
     res = client.post("/api/v1/predict?model=v2", json=req)
     assert res.status_code == 200

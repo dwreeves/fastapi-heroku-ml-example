@@ -20,6 +20,9 @@ from app.api.v1.routes import router as router_v1
 from app.config import settings
 
 
+# from app.db.core import async_engine
+
+
 app = FastAPI(
     title=settings.APP_NAME,
     docs_url=None,
@@ -36,10 +39,22 @@ async def time_it(
         request: Request,
         call_next: t.Callable[[Request], t.Awaitable[Response]]
 ) -> Response:
+    print("." * 80)
     start = time.time()
     res = await call_next(request)
     res.headers["X-Process-Time"] = str(time.time() - start)
     return res
+
+
+# @app.get("/clean")
+# async def clean():
+#     await async_engine.dispose()
+#     return "done"
+
+
+# @app.on_event("shutdown")
+# async def dispose_pool():
+#     await async_engine.dispose()
 
 
 @app.exception_handler(Exception)

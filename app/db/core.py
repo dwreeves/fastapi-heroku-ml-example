@@ -15,11 +15,11 @@ async_engine = create_async_engine(
     settings.SQLALCHEMY_DATABASE_URI,
     pool_pre_ping=True,
     pool_size=5,
+    pool_recycle=10,
     max_overflow=10
 )
 
 AsyncSession: t.Type[_AsyncSession] = sessionmaker(
     bind=async_engine,
     class_=_AsyncSession,
-    expire_on_commit=False
 )
