@@ -39,7 +39,6 @@ async def time_it(
         request: Request,
         call_next: t.Callable[[Request], t.Awaitable[Response]]
 ) -> Response:
-    print("." * 80)
     start = time.time()
     res = await call_next(request)
     res.headers["X-Process-Time"] = str(time.time() - start)
