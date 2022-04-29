@@ -30,16 +30,18 @@ async def process_instance(
         inst: PreprocessedInstance,
         db: AsyncSession
 ) -> ProcessedInstance:
-    origin_airport = (await db.execute(
+    origin_airport_future = db.execute(
         select(Airport)
         .filter(Airport.iata == inst.origin_iata)
         .limit(1)
-    )).scalar_one_or_none()
-    destination_airport = (await db.execute(
+    )
+    destination_airport_future = db.execute(
         select(Airport)
         .filter(Airport.iata == inst.destination_iata)
         .limit(1)
-    )).scalar_one_or_none()
+    )
+    origin_airport = (await origin_airport_future).scalar_one_or_none()
+    destination_airport = (await destination_airport_future).scalar_one_or_none()
 
     # Handle a bad request here.
     if origin_airport is None or destination_airport is None:
